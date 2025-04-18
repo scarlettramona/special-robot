@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ROS_DISTRO=humble
 
 # basic tools
-RUN apt-get update && apt-get install -y curl git lsb-release
+RUN apt-get update && apt-get install -y curl git lsb-release gnupg
 
 # ROS 2 base + development tools
 RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \

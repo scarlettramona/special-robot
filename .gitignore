@@ -6,7 +6,7 @@ ros2_ws/install/
 **/__pycache__/
 # --- editor / OS clutter --------------------------------------------
 .vscode/
-.devcontainer/
+#.devcontainer/
 .DS_Store
 *.log
 *.bag
