@@ -45,13 +45,14 @@ def generate_launch_description():
     control_node = Node(
         package='controller_manager',
         executable='ros2_control_node',
+        name='controller_manager',
         output='screen',
-        parameters=[
-            {'use_sim_time': True},
-            {'robot_description': open(urdf_path).read()},
-            cfg_file
-        ]
+        parameters=[cfg_file],     # your controllers.yaml only
+        remappings=[('/robot_description', 'robot_description')],
+        # or if you prefer explicit param:
+        # parameters=[{'robot_description': robot_description_content}, cfg_file],
     )
+
 
     # 4) Spawn into Ignition
     spawn_entity = Node(
@@ -91,4 +92,3 @@ def generate_launch_description():
         load_ptc,
         jsp_gui,
     ])
-Zz

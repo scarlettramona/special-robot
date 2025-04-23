@@ -212,7 +212,7 @@
   <!-- ============ ros2_control interface ============ -->
   <ros2_control name="GazeboSystem" type="system">
     <hardware>
-      <plugin>ign_ros2_control/GazeboSystem</plugin>
+      <plugin>gz_ros2_control/GazeboSystem</plugin>
     </hardware>
     <joint name="joint1">
       <command_interface name="position"/>
@@ -243,7 +243,9 @@
 
   <!-- ============ Ignition/Gazebo ros2_control plugin ============ -->
   <gazebo>
-    <plugin name="ign_ros2_control" filename="libign_ros2_control.so">
+    <plugin
+      filename="libgz_ros2_control-system.so"
+      name="gz_ros2_control::GazeboSystem">
       <robotNamespace>/</robotNamespace>
       <controlPeriod>0.01</controlPeriod>
     </plugin>

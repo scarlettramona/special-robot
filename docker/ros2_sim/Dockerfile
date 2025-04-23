@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y wget gnupg2 lsb-release \
 RUN apt-get update && apt-get install -y \
     gazebo \
     ros-humble-ros-ign \
+    ros-humble-gazebo-ros-pkgs \  
     ros-humble-ros-ign-gazebo \
     ros-humble-ros-ign-bridge \
     ros-humble-ros2-control \
@@ -25,7 +26,6 @@ RUN apt-get update && apt-get install -y \
     ros-humble-xacro \
     ros-humble-moveit \
     ros-humble-ament-cmake \
-    ros-humble-ign-ros2-control \
     curl git python3-pip python3-colcon-common-extensions \
     libopencv-dev python3-opencv \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
