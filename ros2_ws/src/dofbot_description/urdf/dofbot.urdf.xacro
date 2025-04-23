@@ -30,14 +30,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/base_link.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/base_link.dae"/>
       </geometry>
       <material name="grey"/>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/base_link.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/base_link.dae"/>
       </geometry>
     </collision>
   </link>
@@ -47,14 +47,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link1.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link1.dae"/>
       </geometry>
       <material name="green"/>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link1.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link1.dae"/>
       </geometry>
     </collision>
   </link>
@@ -71,14 +71,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link2.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link2.dae"/>
       </geometry>
       <material name="grey"/>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link2.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link2.dae"/>
       </geometry>
     </collision>
   </link>
@@ -95,14 +95,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link3.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link3.dae"/>
       </geometry>
       <material name="green"/>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link3.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link3.dae"/>
       </geometry>
     </collision>
   </link>
@@ -119,14 +119,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link4.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link4.dae"/>
       </geometry>
       <material name="grey"/>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link4.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link4.dae"/>
       </geometry>
     </collision>
   </link>
@@ -143,14 +143,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link5.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link5.dae"/>
       </geometry>
       <material name="white"/>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link5.STL"/>
+        <mesh filename="file:///ros2_ws/install/share/dofbot_description/meshes/link5.dae"/>
       </geometry>
     </collision>
   </link>
@@ -212,7 +212,7 @@
   <!-- ============ ros2_control interface ============ -->
   <ros2_control name="GazeboSystem" type="system">
     <hardware>
-      <plugin>gz_ros2_control/GazeboSystem</plugin>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
     </hardware>
     <joint name="joint1">
       <command_interface name="position"/>
@@ -241,13 +241,13 @@
     </joint>
   </ros2_control>
 
-  <!-- ============ Ignition/Gazebo ros2_control plugin ============ -->
+  <!-- ============ Gazebo ros2_control plugin ============ -->
   <gazebo>
-    <plugin
-      filename="libgz_ros2_control-system.so"
-      name="gz_ros2_control::GazeboSystem">
+    <plugin filename="libgazebo_ros2_control.so"
+            name="gazebo_ros2_control">
       <robotNamespace>/</robotNamespace>
       <controlPeriod>0.01</controlPeriod>
+      <parameters>$(find dofbot_description)/config/controllers.yaml</parameters>
     </plugin>
   </gazebo>
 

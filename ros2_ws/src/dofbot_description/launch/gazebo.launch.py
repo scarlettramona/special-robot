@@ -1,94 +1,91 @@
-import os
-
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions      import Command
-from launch_ros.actions       import Node
+from launch.substitutions import Command, PathJoinSubstitution
+from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
+from launch.substitutions import FindExecutable
 
 def generate_launch_description():
-    pkg = get_package_share_directory('dofbot_description')
-    xacro_file = os.path.join(pkg, 'urdf', 'dofbot.urdf.xacro')
-    urdf_path  = xacro_file
-    cfg_file   = os.path.join(pkg, 'config', 'controllers.yaml')
+    pkg_dofbot = get_package_share_directory("dofbot_description")
 
-    # Expand xacro
-    robot_description_content = Command([
-        'xacro ', xacro_file,
-        ' prefix:=', ''
+    # Use FindExecutable to locate 'xacro'
+    xacro_command = PathJoinSubstitution([
+        pkg_dofbot,
+        "urdf",
+        "dofbot.urdf.xacro"
     ])
 
-    # 1) Launch Ignition (GZ Fortress)
-    gz = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory('ros_gz_sim'),
-                'launch', 'gz_sim.launch.py'
-            )
-        ),
-        launch_arguments={'gz_args': ''}.items()
+    robot_description_content = Command([
+        FindExecutable(name='xacro'),
+        ' ',
+        xacro_command
+    ])
+
+    # Gazebo classic launch
+    gazebo_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                get_package_share_directory('gazebo_ros'),
+                'launch',
+                'gazebo.launch.py'
+            ])
+        ])
     )
 
-    # 2) Publish robot_description
-    rsp = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='screen',
-        parameters=[{
-            'use_sim_time': True,
-            'robot_description': robot_description_content
-        }]
+    rsp_node = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        parameters=[{"use_sim_time": True, "robot_description": robot_description_content}],
+        output="screen"
     )
 
-    # 3) ros2_control manager
-    control_node = Node(
-        package='controller_manager',
-        executable='ros2_control_node',
-        name='controller_manager',
-        output='screen',
-        parameters=[cfg_file],     # your controllers.yaml only
-        remappings=[('/robot_description', 'robot_description')],
-        # or if you prefer explicit param:
-        # parameters=[{'robot_description': robot_description_content}, cfg_file],
-    )
-
-
-    # 4) Spawn into Ignition
     spawn_entity = Node(
-        package='ros_gz_sim',
-        executable='create',
-        arguments=['-name', 'dofbot', '-topic', 'robot_description'],
-        output='screen'
+        package="gazebo_ros",
+        executable="spawn_entity.py",
+        arguments=[
+            "-entity", "dofbot",
+            "-topic",  "robot_description",
+            "-z",      "0.2"          # 20 cm above ground
+        ],
+        output="screen"
     )
 
-    # 5) Autospawn controllers
-    load_jsb = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
-        output='screen'
-    )
-    load_ptc = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['position_trajectory_controller', '--controller-manager', '/controller_manager'],
-        output='screen'
+    jsb_spawner = TimerAction(
+        period=3.0,
+        actions=[
+            Node(
+                package="controller_manager",
+                executable="spawner",
+                arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+                output="screen"
+            )
+        ]
     )
 
-    # 6) Optional GUI sliders
+    ptc_spawner = TimerAction(
+        period=4.0,
+        actions=[
+            Node(
+                package="controller_manager",
+                executable="spawner",
+                arguments=["position_trajectory_controller", "--controller-manager", "/controller_manager"],
+                output="screen"
+            )
+        ]
+    )
+
     jsp_gui = Node(
-        package='joint_state_publisher_gui',
-        executable='joint_state_publisher_gui',
-        output='screen'
+        package="joint_state_publisher_gui",
+        executable="joint_state_publisher_gui",
+        output="screen"
     )
 
     return LaunchDescription([
-        gz,
-        rsp,
-        control_node,
+        gazebo_launch,
+        rsp_node,
         spawn_entity,
-        load_jsb,
-        load_ptc,
-        jsp_gui,
+        jsb_spawner,
+        ptc_spawner,
+        jsp_gui
     ])
